@@ -1,0 +1,30 @@
+---
+title: "Marketing ROI Analysis"
+author: "Aryaman Dhindsa"
+date: April 2,2026
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: flatly
+    self-contained: true # bundles everything into one html file
+  pdf:
+    toc: true
+    number-sections: true
+    fontsize: 11pt
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+
+
+```{r Loading Libraries}
+# Loading all the required libraries
+library(tinytex)
+library(tidyverse)
+library(knitr)
+```
+
