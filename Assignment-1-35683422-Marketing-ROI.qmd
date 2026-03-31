@@ -1,0 +1,67 @@
+---
+title: "Marketing ROI Analysis"
+author: "Aryaman Dhindsa"
+date: April 2,2026
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: flatly
+    self-contained: true # bundles everything into one html file
+  pdf:
+    number-sections: true
+    fontsize: 11pt
+---
+
+
+
+```{r Loading Libraries}
+#| echo: false
+#| warning: false
+#| message: false
+# Loading all the required libraries
+library(tidyverse)
+library(knitr)
+library(lubridate)
+```
+
+# Introduction
+Over the past quarter, we implemented a personalised marketing campaign where spending varied across customers through ads, emails, and promotional offers. This approach aimed to better target individuals based on expected value and engagement. The campaign data provides an opportunity to evaluate how effective this experimental variation in marketing investment was.
+
+# Research Question
+Is there a positive or a negative relationship between marketing spend and customer purchase amounts across different customer segments (e.g., Enterprise and Consumer)?
+
+# Dataset Description
+
+This dataset records customer-level marketing return on investment (ROI) information. Each observation represents a unique customer, identified by a costumer ID, and tracks the date they signed up, the amount spent on marketing to engage them, and their subsequent purchase amount. Customers are also categorised into one of the market segments: Consumer, SMB, or Enterprise. Together, these variables allow for analysis of marketing effectiveness and revenue generation across different customer groups.
+
+## Cleaning process
+
+```{r loading and cleaning data}
+#| echo: true
+#| include: false
+
+# loading the dataset
+roi_data <- read.csv("data/35683422_Aryaman Dhindsa Dhindsa.csv")
+
+# Now, cleaning the dataset 
+clean_roi_data <- roi_data |> 
+    select(-notes, -visits) |>
+    mutate(
+    signup_date = na_if(signup_date, "N/A"),
+    signup_date = na_if(signup_date, "NULL"),
+    signup_date = parse_date_time(signup_date, 
+                  orders = c("dmy", "ymd", "mdy"), 
+                  quiet = TRUE),
+    signup_date = as.Date(signup_date)
+    ) |> 
+    drop_na()
+```
+
+Two columns — `notes` and `visits` — were removed as they were not relevant to the analysis. The `signup_date` column contained inconsistently formatted entries as well as `"N/A"` and `"NULL"` strings, which were converted to true `NA` values before being parsed across multiple date formats (day-month-year, year-month-day, and month-day-year) and coerced to a uniform `Date` type. Rows with any remaining missing values were then removed via `drop_na()`. Thus, making the dataset clean.
+
+## Dataset dimensions
+
+The cleaned dataset contains `r nrow(clean_roi_data)` observations across `r ncol(clean_roi_data)` variables: `customer_id` (str), `signup_date` (Date), `marketing_spend` (dbl), `purchase_amount` (dbl), and `segment` (str).
+
