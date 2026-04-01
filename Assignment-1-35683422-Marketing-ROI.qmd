@@ -24,6 +24,7 @@ format:
 library(tidyverse)
 library(knitr)
 library(lubridate)
+library(kableExtra)
 ```
 
 # Introduction
@@ -32,7 +33,7 @@ Over the past quarter, we implemented a personalised marketing campaign where sp
 # Research Question
 Is there a positive or a negative relationship between marketing spend and customer purchase amounts across different customer segments (e.g., Enterprise and Consumer)?
 
-# Dataset Description
+# Dataset
 
 This dataset records customer-level marketing return on investment (ROI) information. Each observation represents a unique customer, identified by a costumer ID, and tracks the date they signed up, the amount spent on marketing to engage them, and their subsequent purchase amount. Customers are also categorised into one of the market segments: Consumer, SMB, or Enterprise. Together, these variables allow for analysis of marketing effectiveness and revenue generation across different customer groups.
 
@@ -65,3 +66,38 @@ Two columns — `notes` and `visits` — were removed as they were not relevant 
 
 The cleaned dataset contains `r nrow(clean_roi_data)` observations across `r ncol(clean_roi_data)` variables: `customer_id` (str), `signup_date` (Date), `marketing_spend` (dbl), `purchase_amount` (dbl), and `segment` (str).
 
+
+## Summary statistics
+The --summary table-- below shows the number of targets in each segment, this will help us to interpret the research question. The stat shows the number of targeted costumers in each segment in descending order. This shows that individual costumers are targeted more than enterprises or SMB, as the company may think they are more likely to purchase.
+
+```{r segment summary}
+#| echo: false
+#| include: true
+clean_roi_data |> 
+    group_by(segment) |>
+    summarise(
+        costumer_per_segment = n()
+    ) |> 
+    arrange(desc(costumer_per_segment)) |> 
+    kable() |> 
+    kable_styling()
+```
+
+
+```{r}
+clean_roi_data |> 
+    ggplot(aes(x = marketing_spend, y = purchase_amount,
+     color = segment))+
+    geom_point()+
+    geom_smooth(se = FALSE)+
+    labs(
+        title = "Marketing and Purchase relation per segment",
+        x = "Marketing Spending",
+        y = Purchase_
+    )+
+        theme_minimal()
+```
+
+# Bibliography
+
+# References -- use referenence.bib
