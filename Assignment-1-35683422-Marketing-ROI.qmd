@@ -12,11 +12,12 @@ format:
   pdf:
     number-sections: true
     fontsize: 11pt
+bibliography: references.bib
 ---
 
 
 
-```{r Loading Libraries}
+```{r Loading Library}
 #| echo: false
 #| warning: false
 #| message: false
@@ -27,17 +28,17 @@ library(lubridate)
 library(kableExtra)
 ```
 
-# Introduction
+# Introduction {#sec-introduction}
 Over the past quarter, we implemented a personalised marketing campaign where spending varied across customers through ads, emails, and promotional offers. This approach aimed to better target individuals based on expected value and engagement. The campaign data provides an opportunity to evaluate how effective this experimental variation in marketing investment was.
 
-# Research Question
+# Research Question {#sec-reseach-question}
 Is there a positive or a negative relationship between marketing spend and customer purchase amounts across different customer segments (e.g., Enterprise and Consumer)?
 
-# Dataset
+# Dataset {#sec-dataset}
 
 This dataset records customer-level marketing return on investment (ROI) information. Each observation represents a unique customer, identified by a costumer ID, and tracks the date they signed up, the amount spent on marketing to engage them, and their subsequent purchase amount. Customers are also categorised into one of the market segments: Consumer, SMB, or Enterprise. Together, these variables allow for analysis of marketing effectiveness and revenue generation across different customer groups.
 
-## Cleaning process
+## Cleaning process {#sec-clean-process}
 
 ```{r loading and cleaning data}
 #| echo: true
@@ -50,6 +51,7 @@ roi_data <- read.csv("data/35683422_Aryaman Dhindsa Dhindsa.csv")
 clean_roi_data <- roi_data |> 
     select(-notes, -visits) |>
     mutate(
+    customer_id = str_extract(customer_id,"c.*"),
     signup_date = na_if(signup_date, "N/A"),
     signup_date = na_if(signup_date, "NULL"),
     signup_date = parse_date_time(signup_date, 
@@ -62,42 +64,133 @@ clean_roi_data <- roi_data |>
 
 Two columns — `notes` and `visits` — were removed as they were not relevant to the analysis. The `signup_date` column contained inconsistently formatted entries as well as `"N/A"` and `"NULL"` strings, which were converted to true `NA` values before being parsed across multiple date formats (day-month-year, year-month-day, and month-day-year) and coerced to a uniform `Date` type. Rows with any remaining missing values were then removed via `drop_na()`. Thus, making the dataset clean.
 
-## Dataset dimensions
+::: {.callout-note}
+The tidy `signup_date` is not used in answering the research question as there is not enough data so get a acceptable answer to the question. Assuming the data is of October, 2025 to December, 2025; There are only **20 observations** which will not provide enough statistical insight for research question to be answered.
+:::
+
+## Dataset dimensions {#sec-data-dim}
 
 The cleaned dataset contains `r nrow(clean_roi_data)` observations across `r ncol(clean_roi_data)` variables: `customer_id` (str), `signup_date` (Date), `marketing_spend` (dbl), `purchase_amount` (dbl), and `segment` (str).
 
 
-## Summary statistics
-The --summary table-- below shows the number of targets in each segment, this will help us to interpret the research question. The stat shows the number of targeted costumers in each segment in descending order. This shows that individual costumers are targeted more than enterprises or SMB, as the company may think they are more likely to purchase.
+## Summary statistics {#sec-sum-stat}
+The @tbl-segment-summary shows the number of targets in each segment, this will help us to interpret the research question. The stat shows the number of targeted costumers in each segment in descending order. This shows that individual costumers are targeted more than enterprises or SMB, as the company may think they are more likely to purchase.
 
 ```{r segment summary}
 #| echo: false
 #| include: true
-clean_roi_data |> 
+seg_summary <- clean_roi_data |> 
     group_by(segment) |>
     summarise(
         costumer_per_segment = n()
-    ) |> 
+    )
+```
+
+```{r seg-count-table}
+#| echo: false
+#| include: true
+#| label: tbl-segment-summary
+seg_summary|> 
     arrange(desc(costumer_per_segment)) |> 
-    kable() |> 
+    kable(col.names = c("Segment", "Observations per segment")) |> 
     kable_styling()
 ```
 
+THe @fig-segment-bar-plot shows the average marketing spend on each segment of costumers. From the graph, we can interpret that the spending was similar for SMB and consumers whereas for the Enterprice segment, the the spending was comparatively higher than others. 
 
-```{r}
+This will get more clear in @sec-result if the increase in average marketing spend increases the purchase amount on average for a segment.
+
+:::{.callout-tip}
+Humans are better at interpreting visual data than numerical data.
+:::
+
+```{r segment bar-plot}
+#| echo: false
+#| include: true
+#| label: fig-segment-bar-plot
+#| fig-align: center
+clean_roi_data |>
+  group_by(segment) |>
+  summarise(avg_spend = mean(marketing_spend)) |>
+  ggplot(aes(x = segment, y = avg_spend, fill = segment)) +
+  geom_col(show.legend = FALSE, width = 0.3) +
+  labs(
+    x = "Customer Segment",
+    y = "Average Marketing Spend"
+  ) +
+  theme_minimal()
+```
+
+# Result {#sec-result}
+Keeping the question in @sec-reseach-question in mind, we will start to look for patterns in the data. This includes:
+
+- Does data have positive or negative slope?
+- Does any segment have to many outliners?
+- Is there a gradual increase or decrease in the purchase amount even if the marketing spend is increasing?
+
+## Observations {#sec-obs}
+The @fig-mp-relation show a clear positive relationship between marketing spend and purchase amount, meaning that higher investment in marketing consistently leads to greater revenue across the board.
+
+- Enterprise customers demonstrate the steepest growth curve, suggesting they respond more aggressively to increased marketing spend and generate the highest returns at the upper end of the spend range.
+- SMB customers follow a similar upward trajectory to Enterprise at higher spend levels, though they show more variability in the mid-range, indicating less predictable returns in that zone.
+- Consumer segment customers show the most gradual and stable trend line, implying a more modest but consistent response to marketing investment compared to the other two segments.
+
+```{r marketing-purchase relation plot}
+#| label: fig-mp-relation
+#| fig-cap: Marketing and Purchase relation per segment
+#| echo: false
+#| include: true
+#| warning: false
+#| error: false
 clean_roi_data |> 
     ggplot(aes(x = marketing_spend, y = purchase_amount,
      color = segment))+
     geom_point()+
     geom_smooth(se = FALSE)+
     labs(
-        title = "Marketing and Purchase relation per segment",
         x = "Marketing Spending",
-        y = Purchase_
+        y = "Purchase Amount",
+        fill = "Segment"
     )+
-        theme_minimal()
+    theme_minimal()
 ```
 
-# Bibliography
+Now, To know which segment of costumer have the best ROI (Return On Investment). We will have to find the ROI for every segment.
 
-# References -- use referenence.bib
+::: {.callout-note}
+ROI = (Purchase Amount - Marketing Spend) / Marketing Spend × 100
+:::
+
+```{r}
+#| echo: false
+#| label: fig-roi
+#| fig-cap: "Return on investment by customer segment"
+
+clean_roi_data |>
+  group_by(segment) |>
+  summarise(
+    avg_spend = mean(marketing_spend),
+    avg_purchase = mean(purchase_amount),
+    roi = (avg_purchase - avg_spend) / avg_spend * 100
+  ) |>
+  ggplot(aes(x = segment, y = roi, fill = segment)) +
+  geom_col(show.legend = FALSE, width = 0.3) +
+  labs(
+    x = "Customer Segment",
+    y = "ROI (%)"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2")
+```
+
+The graph indicates that there is negative relation in marketing spend and purchase amount for the segment of **consumer** whereas for **SMB** there is a little to no positive relation. But in the case of **Enterprise** there is comparitively overwhelming ROI, of approximately 2%. 
+
+
+## Result summary {#sec-result-sum} 
+All of the observation in @sec-obs concludes that the company increased marketing spend progressively for all three sections which leads to increase in purchase amount for all sections. But this does not mean that all three sections performed positively in this campaign, the consumer segment performed negatively due to the outliners that are far more in this segment than others, this made the whole segment negative.
+
+**As for the research question**, the Enterprise segment performed the best and company should focus the campaign on this segment and try to experiment different campaign with other segments.
+
+::: {.callout-important}
+This is just an observational study of a small dataset and more research is needed for any decision by the company on campaign results.
+:::
