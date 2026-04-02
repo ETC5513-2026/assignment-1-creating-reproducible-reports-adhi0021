@@ -12,10 +12,7 @@ format:
   pdf:
     number-sections: true
     fontsize: 11pt
-bibliography: references.bib
 ---
-
-
 
 ```{r Loading Library}
 #| echo: false
@@ -26,6 +23,15 @@ library(tidyverse)
 library(knitr)
 library(lubridate)
 library(kableExtra)
+```
+
+```{r set-global-options}
+#| echo: false
+#| include: false
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
 ```
 
 # Introduction {#sec-introduction}
@@ -41,8 +47,7 @@ This dataset records customer-level marketing return on investment (ROI) informa
 ## Cleaning process {#sec-clean-process}
 
 ```{r loading and cleaning data}
-#| echo: true
-#| include: false
+#| echo: false
 
 # loading the dataset
 roi_data <- read.csv("data/35683422_Aryaman Dhindsa Dhindsa.csv")
@@ -62,7 +67,7 @@ clean_roi_data <- roi_data |>
     drop_na()
 ```
 
-Two columns — `notes` and `visits` — were removed as they were not relevant to the analysis. The `signup_date` column contained inconsistently formatted entries as well as `"N/A"` and `"NULL"` strings, which were converted to true `NA` values before being parsed across multiple date formats (day-month-year, year-month-day, and month-day-year) and coerced to a uniform `Date` type. Rows with any remaining missing values were then removed via `drop_na()`. Thus, making the dataset clean.
+Two columns — `notes` and `visits` — were removed as they were not relevant to the analysis. The `signup_date` column contained inconsistently formatted entries as well as `"N/A"` and `"NULL"` strings, which were converted to true `NA` values before being parsed across multiple date formats (day-month-year, year-month-day, and month-day-year) and coerced to a uniform `Date` type. Rows with any remaining missing values were then removed via `drop_na()`.Also, the common numbers were removed from the `customer_id` using `str_extract()` with regex. Thus, making the dataset clean.
 
 ::: {.callout-note}
 The tidy `signup_date` is not used in answering the research question as there is not enough data so get a acceptable answer to the question. Assuming the data is of October, 2025 to December, 2025; There are only **20 observations** which will not provide enough statistical insight for research question to be answered.
@@ -90,6 +95,8 @@ seg_summary <- clean_roi_data |>
 #| echo: false
 #| include: true
 #| label: tbl-segment-summary
+#| tbl-cap: Observation Count per Segment 
+#| tbl-cap-location: top
 seg_summary|> 
     arrange(desc(costumer_per_segment)) |> 
     kable(col.names = c("Segment", "Observations per segment")) |> 
@@ -109,6 +116,8 @@ Humans are better at interpreting visual data than numerical data.
 #| include: true
 #| label: fig-segment-bar-plot
 #| fig-align: center
+#| fig-cap: Average Marketing Spend per Segment
+#| fig-cap-location: bottom
 clean_roi_data |>
   group_by(segment) |>
   summarise(avg_spend = mean(marketing_spend)) |>
@@ -129,19 +138,13 @@ Keeping the question in @sec-reseach-question in mind, we will start to look for
 - Is there a gradual increase or decrease in the purchase amount even if the marketing spend is increasing?
 
 ## Observations {#sec-obs}
-The @fig-mp-relation show a clear positive relationship between marketing spend and purchase amount, meaning that higher investment in marketing consistently leads to greater revenue across the board.
-
-- Enterprise customers demonstrate the steepest growth curve, suggesting they respond more aggressively to increased marketing spend and generate the highest returns at the upper end of the spend range.
-- SMB customers follow a similar upward trajectory to Enterprise at higher spend levels, though they show more variability in the mid-range, indicating less predictable returns in that zone.
-- Consumer segment customers show the most gradual and stable trend line, implying a more modest but consistent response to marketing investment compared to the other two segments.
 
 ```{r marketing-purchase relation plot}
 #| label: fig-mp-relation
 #| fig-cap: Marketing and Purchase relation per segment
+#| fig-cap-location: bottom
 #| echo: false
 #| include: true
-#| warning: false
-#| error: false
 clean_roi_data |> 
     ggplot(aes(x = marketing_spend, y = purchase_amount,
      color = segment))+
@@ -155,6 +158,14 @@ clean_roi_data |>
     theme_minimal()
 ```
 
+The @fig-mp-relation show a clear positive relationship between marketing spend and purchase amount, meaning that higher investment in marketing consistently leads to greater revenue across the board.
+
+- Enterprise customers demonstrate the steepest growth curve, suggesting they respond more aggressively to increased marketing spend and generate the highest returns at the upper end of the spend range.
+- SMB customers follow a similar upward trajectory to Enterprise at higher spend levels, though they show more variability in the mid-range, indicating less predictable returns in that zone.
+- Consumer segment customers show the most gradual and stable trend line, implying a more modest but consistent response to marketing investment compared to the other two segments.\
+
+--- 
+
 Now, To know which segment of costumer have the best ROI (Return On Investment). We will have to find the ROI for every segment.
 
 ::: {.callout-note}
@@ -165,6 +176,7 @@ ROI = (Purchase Amount - Marketing Spend) / Marketing Spend × 100
 #| echo: false
 #| label: fig-roi
 #| fig-cap: "Return on investment by customer segment"
+#| fig-cap-location: bottom
 
 clean_roi_data |>
   group_by(segment) |>
@@ -183,13 +195,15 @@ clean_roi_data |>
   scale_fill_brewer(palette = "Set2")
 ```
 
-The graph indicates that there is negative relation in marketing spend and purchase amount for the segment of **consumer** whereas for **SMB** there is a little to no positive relation. But in the case of **Enterprise** there is comparitively overwhelming ROI, of approximately 2%. 
+The graph @fig-roi indicates that there is negative relation in marketing spend and purchase amount for the segment of **consumer** whereas for **SMB** there is a little to no positive relation. But in the case of **Enterprise** there is comparitively overwhelming ROI, of approximately 2%. 
 
 
 ## Result summary {#sec-result-sum} 
 All of the observation in @sec-obs concludes that the company increased marketing spend progressively for all three sections which leads to increase in purchase amount for all sections. But this does not mean that all three sections performed positively in this campaign, the consumer segment performed negatively due to the outliners that are far more in this segment than others, this made the whole segment negative.
 
-**As for the research question**, the Enterprise segment performed the best and company should focus the campaign on this segment and try to experiment different campaign with other segments.
+---
+
+**As for the research question**, the Enterprise segment performed the best as shown in @fig-roi and company should focus the campaign on this segment and try to experiment different campaign with other segments.
 
 ::: {.callout-important}
 This is just an observational study of a small dataset and more research is needed for any decision by the company on campaign results.

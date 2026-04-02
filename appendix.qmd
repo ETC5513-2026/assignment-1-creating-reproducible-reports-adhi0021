@@ -1,0 +1,26 @@
+---
+title: "Marketing ROI Analysis"
+author: "Aryaman Dhindsa"
+date: April 2,2026
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: flatly
+    self-contained: true # bundles everything into one html file
+---
+
+# AI referencing
+
+1. Used Google for ROI (Return on Investment) formula.
+
+2. Did some brainstorming for cross referencing with Claude AI
+
+- [Claude-SS-1-scl-fill-manual](apndx-images/claude-1.png)
+- [Claude-SS-2-echo](apndx-images/claude-2.png)
+- [Claude-SS-3-inline-r](apndx-images/claude-3.png)
+- [Claude-SS-1-figure-cap](apndx-images/claude-4.png)
+
+3. Used R documentation for syntax and other useful insights.
+
