@@ -10,6 +10,14 @@ format:
     theme: flatly
     self-contained: true # bundles everything into one html file
 ---
+```{r}
+#| echo = FALSE
+knitr::opts_chunk$set(
+        echo = FALSE,
+        warning = FALSE,
+        error = FALSE
+)
+```
 
 # AI referencing
 
@@ -17,10 +25,17 @@ format:
 
 2. Did some brainstorming for cross referencing with Claude AI
 
-- [Claude-SS-1-scl-fill-manual](apndx-images/claude-1.png)
-- [Claude-SS-2-echo](apndx-images/claude-2.png)
-- [Claude-SS-3-inline-r](apndx-images/claude-3.png)
-- [Claude-SS-1-figure-cap](apndx-images/claude-4.png)
+```{r}
+knitr::include_graphics("apndx-images/claude-1.png")
+knitr::include_graphics("apndx-images/claude-2.png")
+knitr::include_graphics("apndx-images/claude-3.png")
+knitr::include_graphics("apndx-images/claude-4.png")
+```
+
 
 3. Used R documentation for syntax and other useful insights.
 
+
+:::{.callout-note}
+Used Lecture notes for most of information.
+:::

@@ -97,11 +97,11 @@ seg_summary <- clean_roi_data |>
 #| echo: false
 #| include: true
 #| label: tbl-segment-summary
-#| tbl-cap: Observation Count per Segment 
 #| tbl-cap-location: top
 seg_summary|> 
     arrange(desc(costumer_per_segment)) |> 
-    kable(col.names = c("Segment", "Observations per segment")) |> 
+    kable(col.names = c("Segment", "Observations per segment"), 
+          caption = "Observation Count per Segment") |> 
     kable_styling()
 ```
 
