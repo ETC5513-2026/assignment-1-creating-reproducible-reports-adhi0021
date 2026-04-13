@@ -30,6 +30,8 @@ knitr::include_graphics("apndx-images/claude-1.png")
 knitr::include_graphics("apndx-images/claude-2.png")
 knitr::include_graphics("apndx-images/claude-3.png")
 knitr::include_graphics("apndx-images/claude-4.png")
+knitr::include_graphics("apndx-images/gpt-1.png")
+knitr::include_graphics("apndx-images/gpt-2.png")
 ```
 
 

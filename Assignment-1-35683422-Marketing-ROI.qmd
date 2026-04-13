@@ -1,7 +1,6 @@
 ---
 title: "Marketing ROI Analysis"
 author: "Aryaman Dhindsa"
-date: April 2,2026
 format:
   html:
     toc: true
@@ -35,12 +34,10 @@ knitr::opts_chunk$set(
 ```
 
 # Introduction {#sec-introduction}
-Over the past quarter, a personalised marketing campaign was implemented in which spending varied across customers through a combination of advertisements, emails, and promotional offers. This approach was designed to more precisely target individuals based on their expected value and level of engagement with the brand. The variation in marketing investment across customers was intentional and experimental in nature, providing a structured opportunity to assess its effectiveness. The resulting campaign data therefore serves as a valuable foundation for evaluating the relationship between marketing expenditure and customer purchase behavior across different segments.
+Over the past quarter, a personalised marketing campaign varied spending across customers using ads, emails, and promotions. This targeted approach was based on expected value and engagement, with intentional variation designed as an experiment. The resulting data provides a strong foundation to evaluate how marketing spend influences purchase behavior across segments.
 
 # Research Question {#sec-reseach-question}
-Does increased marketing expenditure lead to higher customer purchase amounts, or does the relationship between the two variables reveal a more complex dynamic? Furthermore, does this relationship manifest consistently across distinct customer segments — specifically Enterprise and Consumer — given that these groups differ considerably in their purchasing behavior and decision-making processes? 
-
-Addressing this question is of significant importance, as a precise understanding of how marketing spend influences purchase amounts across segments is essential for informed budget allocation and the development of effective, targeted marketing strategies.
+Does increasing marketing spend actually drive higher customer purchase amounts, or is the relationship more complex? Does this effect remain consistent across different segments like Enterprise and Consumer, given their distinct behaviors? Understanding this is crucial for optimizing budget allocation and designing targeted marketing strategies.
 
 # Dataset {#sec-dataset}
 
@@ -134,7 +131,6 @@ clean_roi_data |>
 
 # Result {#sec-result}
 Keeping the question in @sec-reseach-question in mind, we will start to look for patterns in the data. This includes:
-
 - Does data have positive or negative slope?
 - Does any segment have to many outliners?
 - Is there a gradual increase or decrease in the purchase amount even if the marketing spend is increasing?
@@ -165,9 +161,7 @@ The @fig-mp-relation show a clear positive relationship between marketing spend 
 
 - Enterprise customers demonstrate the steepest growth curve, suggesting they respond more aggressively to increased marketing spend and generate the highest returns at the upper end of the spend range.
 - SMB customers follow a similar upward trajectory to Enterprise at higher spend levels, though they show more variability in the mid-range, indicating less predictable returns in that zone.
-- Consumer segment customers show the most gradual and stable trend line, implying a more modest but consistent response to marketing investment compared to the other two segments.\
-
---- 
+- Consumer segment customers show the most gradual and stable trend line, implying a more modest but consistent response to marketing investment compared to the other two segments.
 
 Now, To know which segment of costumer have the best ROI (Return On Investment). We will have to find the ROI for every segment.
 
